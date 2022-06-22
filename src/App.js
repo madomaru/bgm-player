@@ -15,7 +15,7 @@ function App() {
         <Route path="/" element={<Form />}/>
         <Route path="/about" element={<About />}/>
         <Route path="/player" element={<Player/>}/>
-        {/* <Route path="*" element={<NoMatch />}/> */}
+        <Route path="*" element={<NoMatch />}/>
       </Routes>
       
 
