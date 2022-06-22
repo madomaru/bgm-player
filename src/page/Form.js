@@ -38,8 +38,16 @@ const Form = () =>{
     }
     function ToPlayer(){
         if(selectedKeyword && selectedTimer){
+            let isFree,secTimer
+            if(selectedTimer == "free"){
+                isFree = true
+                secTimer = null
+            }else{
+                isFree = false
+                secTimer = selectedTimer == "15min" ? 15*60 : 30*60
+            }
             onSearchYoutube(selectedKeyword).then((videoId) =>{
-                navigate("/player",{state: {videoId:videoId ,timer: selectedTimer}})
+                navigate("/player",{state: {videoId:videoId ,secTimer: secTimer,isFree: isFree}})
               })
             
         }else{
@@ -49,7 +57,7 @@ const Form = () =>{
       async function onSearchYoutube(keyword){
         const searchKeyword = keyword + " bgm";
         let resultVideoId =""
-        const url = `https://www.googleapis.com/youtube/v3/search?type=video&part=id&q=${searchKeyword}&maxResults=5&key=${YOUTUBE_API_KEY}`;
+        const url = `https://www.googleapis.com/youtube/v3/search?type=video&part=id&q=${searchKeyword}&maxResults=10&key=${YOUTUBE_API_KEY}`;
         
         try{
           const res = await axios.get(url)
