@@ -2,6 +2,7 @@
 import React, {useEffect,useRef } from 'react';
 import {useLocation} from 'react-router-dom'
 import soundfile from '../sound/alerm.mp3' 
+import Button from '../Component/Button';
 
 function Player(){
     const location = useLocation();//location.state.videoId,timer
@@ -25,7 +26,6 @@ function Player(){
   
     return (
         <div>
-            <h2>Player</h2>
             {!isFree && 
                 <div>
                     <Timer secTimer={location.state.secTimer} playerControl={(action) => playerControl(action)}/>
@@ -101,21 +101,14 @@ const Timer = (props) =>{
     }
     return (
         <div>
-                <p>{Math.floor(time/60)} : {('00'+(time % 60)).slice(-2)}</p>
+                <div className='text-6xl items-center text-blue-800'>{Math.floor(time/60)} : {('00'+(time % 60)).slice(-2)}</div>
                 <Button 
                     value = {isPlaying ? "stop" : "start"}
                     onClick = {() => {isPlaying ? stopTimer() : startTimer()}}
                 />
-            </div>
+        </div>
     );
 }
 
-const Button = (props) =>{
-    return (
-        <button onClick={props.onClick}>
-            {props.value}
-        </button>
 
-    );
-}
 export default Player;

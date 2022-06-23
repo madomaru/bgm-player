@@ -1,6 +1,7 @@
 import {useState,useEffect} from 'react';
 import {useNavigate} from "react-router-dom"
 import axios from 'axios'
+import Button from '../Component/Button';
 
 const YOUTUBE_API_KEY = 'AIzaSyDrD3vDFJDXeSysFlHgIF67xHN3Hjm4BDc'
 // import ReactDOM from 'react-dom/client';
@@ -13,6 +14,7 @@ const Form = () =>{
                 {id: 2,value: "free"},
             ]);
     const [selectedKeywords,setSelectedKeywords] = useState(Array(3).fill(""));//three keywords
+    const [selectedIdList,setSelectedIdList] = useState(Array(4).fill().map(e=>-1))
     const [selectedTimer,setSelectedTimer] = useState("");
     const navigate = useNavigate();
     useEffect(() => {
@@ -21,7 +23,6 @@ const Form = () =>{
         }
     },[]);    
     function addKeyword(index,keyword){
-        console.log("yeah"+keywordsList[index].length)
         // if(keywordsList[index]){
             setKeywordsList((prevKeywordsList) =>{
                 let newKeywordsList = JSON.parse(JSON.stringify(prevKeywordsList))
@@ -30,25 +31,25 @@ const Form = () =>{
                 localStorage.setItem('keywordsList',keywordJSON);
                 return newKeywordsList
             })
-            console.log(keywordsList)
-        // }else{
-        //     console.log("else")
-        //     setKeywordsList(()=>{
-        //         const newKeywordsList = keywordsList.concat([{id: keywordsList.length,value: keyword}])
-        //         let keywordJSON = JSON.stringify(newKeywordsList,undefined,1); 
-        //         localStorage.setItem('keywordsList',keywordJSON);
-        //         return newKeywordsList
-        //     })
-        // }
         
         
     }
-    const selectKeyword = (index,value) =>{
+    const selectKeyword = (index,value,id) =>{
         setSelectedKeywords((prevState) =>
             prevState.map(
                 (prevKeyword,i) => (index ===  i  ? value : prevKeyword)
-            )
-        )
+            ))
+        setSelectedIdList((prevState) =>
+        prevState.map(
+            (prevId,i) => (index ===  i  ? id : prevId)
+        ))
+    }
+    const selectTimer = (value,id) =>{
+        setSelectedTimer(value)
+        setSelectedIdList((prevState) =>
+        prevState.map(
+            (prevId,i) => (3 ===  i  ? id : prevId)
+        ))
     }
     function ToPlayer(){
         if(selectedKeywords && selectedTimer){
@@ -72,7 +73,6 @@ const Form = () =>{
         const searchKeyword = keyword + " bgm";
         let resultVideoId =""
         const url = `https://www.googleapis.com/youtube/v3/search?type=video&part=id&q=${searchKeyword}&maxResults=5&videoDuration=long&key=${YOUTUBE_API_KEY}`;
-        console.log(url)
         try{
           const res = await axios.get(url)
           const items = res.data.items
@@ -91,39 +91,33 @@ const Form = () =>{
       }
     return (
         <div>
-            {/* キーワード選択 */}
-            <h2 className ="text-3xl font-bold">Select Keyword</h2>
-            {/* {keywordsList !=null &&
-                <ButtonList 
-                valueList = {keywordsList}
-                onClick = {(value)=>selectKeyword(0,value)}    
-            />
-            } */}
-            
-            
-            
+            <div>
+                <h2 className ="text-xl ">KEYWORD</h2>
+                {keywordsList && keywordsList.map((childList,index) => {
+                    return <div>
+                        <p>{index+1}st</p>
+                        <ButtonList
+                            key = {index} 
+                            valueList = {childList}
+                            onClick = {(value,id)=>selectKeyword(index,value,id)}
+                            selectedId = {selectedIdList[index]}    
+                        />
+                        <AddKeyword onClick={keyword =>addKeyword(index,keyword)}/>
+                    </div>
+                })}
+                {/* タイマー選択 */}
+                <h2>Select Timer</h2>
+                <ButtonList
+                    valueList = {timeList}
+                    onClick = {(value,id)=>selectTimer(value,id)}
+                    selectedId = {selectedIdList[3]} 
+                />
 
-            {keywordsList && keywordsList.map((childList,index) => {
-                console.log("update")
-                return <div>
-                    <p>{index+1}st keyword</p>
-                    <ButtonList 
-                        valueList = {childList}
-                        onClick = {(value)=>selectKeyword(index,value)}    
-                    />
-                    <AddKeyword onClick={keyword =>addKeyword(index,keyword)}/>
-                    <p>selected : {selectedKeywords[index]}</p>
+                <div className="mt-10 mx-auto ">
+                    <Button value = "Play!" onClick={()=>ToPlayer()}/>
                 </div>
-            })}
-            {/* タイマー選択 */}
-            <h2>Select Timer</h2>
-            <ButtonList
-                valueList = {timeList}
-                onClick = {(value)=>setSelectedTimer(value)}
-            />
-            <p>selectedTimer : {selectedTimer}</p>
-            {/* プレイボタン */}
-            <Button value = "Play!" onClick={()=>ToPlayer()}/>
+                
+            </div>
         </div>
     
     );
@@ -136,7 +130,6 @@ const AddKeyword = (props) =>{
         setIsInput(true)
     }
     function handleChange(event){
-        // console.log(event)
         setKeyword(event.target.value)
     }
     function OnAddClick(){
@@ -150,7 +143,7 @@ const AddKeyword = (props) =>{
     }
     if(isInput){
         return  <div>
-                    <input type="text"  onChange = {(event) => handleChange(event)}/>
+                    <input className='border rounded border-blue-400 text-blue-500 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50' type="text"  onChange = {(event) => handleChange(event)}/>
                     <Button value = "add" onClick = {() => OnAddClick()}/>
                 </div>;
     }else{
@@ -166,23 +159,22 @@ const AddKeyword = (props) =>{
 
 const ButtonList = (props) =>{ 
     return (
-        props.valueList.map((object) => 
-            <Button 
+        props.valueList.map((object) => {
+            let selected = false;
+            if(object.id === props.selectedId){
+                selected = true;
+            }
+            return <Button 
                 key={object.id.toString()}
                 value = {object.value}
-                onClick = {() => props.onClick(object.value)}
+                selected = {selected}
+                onClick = {() => props.onClick(object.value,object.id)}
             />
+        }
         )
     );
 }
 
-const Button = (props) =>{
-    return (
-        <button onClick={props.onClick}>
-            {props.value}
-        </button>
 
-    );
-}
 
 export default Form;
