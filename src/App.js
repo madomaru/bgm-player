@@ -1,4 +1,5 @@
 import './App.css';
+import Header from './Component/Header';
 import Form from './page/Form';
 import About from './page/About';
 import NoMatch from "./page/NoMatch";
@@ -10,7 +11,7 @@ function App() {
   
   return (
     <div>
-      <h1>BGM Player</h1>
+      <Header/>
       <Routes>
         <Route path="/" element={<Form />}/>
         <Route path="/about" element={<About />}/>
