@@ -1,5 +1,5 @@
-import { getAllByLabelText } from '@testing-library/react';
-import React, { startTransition, useEffect,useRef } from 'react';
+// import { getAllByLabelText } from '@testing-library/react';
+import React, {useEffect,useRef } from 'react';
 import {useLocation} from 'react-router-dom'
 import soundfile from '../sound/alerm.mp3' 
 
@@ -35,7 +35,7 @@ function Player(){
             }
             
             <div>
-                <iframe ref={iframePlayer} type="text/html" width= {playerWidth} height={playerHeight}
+                <iframe id = "player" ref={iframePlayer} type="text/html" width= {playerWidth} height={playerHeight}
                 src={url}
                 frameBorder="0">
             </iframe>
@@ -64,7 +64,7 @@ const HidePlayerButton = (props) =>{
 
 const Timer = (props) =>{
     const alerm = new Audio(soundfile)
-    const secTimer = props. secTimer
+    const secTimer = props.secTimer
     const [timerId,setTimerId] = React.useState(null)
     const [time,setTime] = React.useState(secTimer);
     const [isPlaying,setIsPlaying] = React.useState(false);
@@ -72,7 +72,7 @@ const Timer = (props) =>{
             startTimer();
     }, []);
     useEffect(() => {
-        if(time==0){
+        if(time===0){
             stopTimer()
             clearInterval(timerId)
             alerm.play()

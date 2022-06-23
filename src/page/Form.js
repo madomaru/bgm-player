@@ -7,7 +7,7 @@ const YOUTUBE_API_KEY = 'AIzaSyDrD3vDFJDXeSysFlHgIF67xHN3Hjm4BDc'
 
 const Form = () =>{ 
     const [keywordsList,setKeywordsList] = useState(JSON.parse(localStorage.getItem('keywordsList')));
-    const [timeList,setTimeList] =useState([
+    const [timeList] =useState([
                 {id: 0,value: "15min"},
                 {id: 1,value: "30min"},
                 {id: 2,value: "free"},
@@ -53,12 +53,12 @@ const Form = () =>{
     function ToPlayer(){
         if(selectedKeywords && selectedTimer){
             let isFree,secTimer
-            if(selectedTimer == "free"){
+            if(selectedTimer === "free"){
                 isFree = true
                 secTimer = null
             }else{
                 isFree = false
-                secTimer = selectedTimer == "15min" ? 15*60 : 30*60
+                secTimer = selectedTimer === "15min" ? 15*60 : 30*60
             }
             onSearchYoutube(selectedKeywords.join(" ")).then((videoId) =>{
                 navigate("/player",{state: {videoId:videoId ,secTimer: secTimer,isFree: isFree}})

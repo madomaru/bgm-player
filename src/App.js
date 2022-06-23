@@ -6,7 +6,7 @@ import NoMatch from "./page/NoMatch";
 import Player from './page/Player';
 import {Routes,Route} from 'react-router-dom'
 
-import { type } from '@testing-library/user-event/dist/type';
+// import { type } from '@testing-library/user-event/dist/type';
 function App() {
   
   return (
