@@ -92,7 +92,7 @@ const Form = () =>{
     return (
         <div>
             {/* キーワード選択 */}
-            <h2>Select Keyword</h2>
+            <h2 className ="text-3xl font-bold">Select Keyword</h2>
             {/* {keywordsList !=null &&
                 <ButtonList 
                 valueList = {keywordsList}
