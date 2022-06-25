@@ -6,6 +6,14 @@ import Button from '../Component/Button';
 
 function Player(){
     const location = useLocation();//location.state.videoId,timer
+    if(location.state.videoId===null){
+        return( 
+            <div>
+                <p>キーワードが選択されていません。</p>
+                <p><Link to="/">こちらで</Link>キーワードを選択してください</p>
+            </div>
+        )
+    }
     const videoId = location.state.videoId
     const isFree = location.state.isFree
     const iframePlayer = useRef(null)
