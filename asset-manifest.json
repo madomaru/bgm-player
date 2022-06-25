@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/bgm-player/static/css/main.07ee947a.css",
-    "main.js": "/bgm-player/static/js/main.6f3a51a5.js",
+    "main.css": "/bgm-player/static/css/main.3a474b3d.css",
+    "main.js": "/bgm-player/static/js/main.3062937f.js",
     "static/js/787.4c31a2d2.chunk.js": "/bgm-player/static/js/787.4c31a2d2.chunk.js",
     "static/media/alerm.mp3": "/bgm-player/static/media/alerm.97bab39547f26349a24f.mp3",
     "index.html": "/bgm-player/index.html",
-    "main.07ee947a.css.map": "/bgm-player/static/css/main.07ee947a.css.map",
-    "main.6f3a51a5.js.map": "/bgm-player/static/js/main.6f3a51a5.js.map",
+    "main.3a474b3d.css.map": "/bgm-player/static/css/main.3a474b3d.css.map",
+    "main.3062937f.js.map": "/bgm-player/static/js/main.3062937f.js.map",
     "787.4c31a2d2.chunk.js.map": "/bgm-player/static/js/787.4c31a2d2.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.07ee947a.css",
-    "static/js/main.6f3a51a5.js"
+    "static/css/main.3a474b3d.css",
+    "static/js/main.3062937f.js"
   ]
 }
