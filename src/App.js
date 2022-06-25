@@ -13,8 +13,8 @@ function App() {
     <div>
       <Header/>
       
-      <div className='bg-blue-200 h-screen'>
-        <div  className='bg-blue-50 w-4/5 items-center mx-auto px-8 py-6 h-screen'>
+      <div className='bg-blue-200 h-full'>
+        <div  className='bg-blue-50 w-4/5 items-center mx-auto px-8 py-6 h-full'>
         <Routes>
             <Route path="/" element={<Form />}/>
             <Route path="/about" element={<About />}/>

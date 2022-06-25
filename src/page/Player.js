@@ -33,7 +33,7 @@ function Player(){
         )
     }
     return (
-        <div>
+        <div className='h-screen'>
             {!isFree && 
                 <div>
                     <Timer secTimer={location.state.secTimer} playerControl={(action) => playerControl(action)}/>

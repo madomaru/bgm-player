@@ -90,12 +90,12 @@ const Form = () =>{
         
       }
     return (
-        <div>
+        <div className='h-screen'>
             <div>
                 <h2 className ="text-xl ">KEYWORD</h2>
                 {keywordsList && keywordsList.map((childList,index) => {
                     return <div>
-                        <p>{index+1}st</p>
+                        <p>{index+1}</p>
                         <ButtonList
                             key = {index} 
                             valueList = {childList}
