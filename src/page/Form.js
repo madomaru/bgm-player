@@ -1,45 +1,68 @@
-import React from 'react';
+import {useState,useEffect} from 'react';
 import {useNavigate} from "react-router-dom"
 import axios from 'axios'
+import Button from '../Component/Button';
 
 const YOUTUBE_API_KEY = 'AIzaSyDrD3vDFJDXeSysFlHgIF67xHN3Hjm4BDc'
 // import ReactDOM from 'react-dom/client';
 
 const Form = () =>{ 
-    const [keywordsList,setKeywordsList] = React.useState(JSON.parse(localStorage.getItem('keywordsList')));
-    const [timeList,setTimeList] =React.useState([
+    const [keywordsList,setKeywordsList] = useState(JSON.parse(localStorage.getItem('keywordsList')));
+    const [timeList] =useState([
                 {id: 0,value: "15min"},
                 {id: 1,value: "30min"},
                 {id: 2,value: "free"},
             ]);
-    const [selectedKeyword,setSelectedKeyword] = React.useState("");
-    const [selectedTimer,setSelectedTimer] = React.useState("");
-    const navigate = useNavigate()
-        
-    function addKeyword(keyword){
-        if(keywordsList == null){
-            setKeywordsList(() =>{
-                const newKeywordsList = [{id: 0 , value: keyword}]
-                let keywordJSON = JSON.stringify(newKeywordsList,undefined,1); 
-                localStorage.setItem('keywordsList',keywordJSON);
-                return newKeywordsList
-            })
-            
-        }else{
-            setKeywordsList(()=>{
-                const newKeywordsList = keywordsList.concat([{id: keywordsList.length,value: keyword}])
-                let keywordJSON = JSON.stringify(newKeywordsList,undefined,1); 
-                localStorage.setItem('keywordsList',keywordJSON);
-                return newKeywordsList
-            })
+    const [selectedKeywords,setSelectedKeywords] = useState(Array(3).fill(""));//three keywords
+    const [selectedIdList,setSelectedIdList] = useState(Array(4).fill().map(e=>-1))
+    const [selectedTimer,setSelectedTimer] = useState("");
+    const navigate = useNavigate();
+    useEffect(() => {
+        if(!keywordsList){
+            setKeywordsList(Array(3).fill().map(e=>[]))
         }
+    },[]);    
+    function addKeyword(index,keyword){
+        // if(keywordsList[index]){
+            setKeywordsList((prevKeywordsList) =>{
+                let newKeywordsList = JSON.parse(JSON.stringify(prevKeywordsList))
+                newKeywordsList[index].push({id: keywordsList[index].length , value: keyword})
+                let keywordJSON = JSON.stringify(newKeywordsList,undefined,1); 
+                localStorage.setItem('keywordsList',keywordJSON);
+                return newKeywordsList
+            })
         
         
     }
+    const selectKeyword = (index,value,id) =>{
+        setSelectedKeywords((prevState) =>
+            prevState.map(
+                (prevKeyword,i) => (index ===  i  ? value : prevKeyword)
+            ))
+        setSelectedIdList((prevState) =>
+        prevState.map(
+            (prevId,i) => (index ===  i  ? id : prevId)
+        ))
+    }
+    const selectTimer = (value,id) =>{
+        setSelectedTimer(value)
+        setSelectedIdList((prevState) =>
+        prevState.map(
+            (prevId,i) => (3 ===  i  ? id : prevId)
+        ))
+    }
     function ToPlayer(){
-        if(selectedKeyword && selectedTimer){
-            onSearchYoutube(selectedKeyword).then((videoId) =>{
-                navigate("/player",{state: {videoId:videoId ,timer: selectedTimer}})
+        if(selectedKeywords && selectedTimer){
+            let isFree,secTimer
+            if(selectedTimer === "free"){
+                isFree = true
+                secTimer = null
+            }else{
+                isFree = false
+                secTimer = selectedTimer === "15min" ? 15*60 : 30*60
+            }
+            onSearchYoutube(selectedKeywords.join(" ")).then((videoId) =>{
+                navigate("/player",{state: {videoId:videoId ,secTimer: secTimer,isFree: isFree}})
               })
             
         }else{
@@ -49,8 +72,7 @@ const Form = () =>{
       async function onSearchYoutube(keyword){
         const searchKeyword = keyword + " bgm";
         let resultVideoId =""
-        const url = `https://www.googleapis.com/youtube/v3/search?type=video&part=id&q=${searchKeyword}&maxResults=5&key=${YOUTUBE_API_KEY}`;
-        
+        const url = `https://www.googleapis.com/youtube/v3/search?type=video&part=id&q=${searchKeyword}&maxResults=5&videoDuration=long&key=${YOUTUBE_API_KEY}`;
         try{
           const res = await axios.get(url)
           const items = res.data.items
@@ -68,40 +90,46 @@ const Form = () =>{
         
       }
     return (
-        <div>
-            {/* キーワード選択 */}
-            <h2>Select Keyword</h2>
-            {keywordsList !=null &&
-                <ButtonList 
-                valueList = {keywordsList}
-                onClick = {(value)=>setSelectedKeyword(value)}    
-            />
-            }
-            
-            <AddKeyword onClick={keyword =>addKeyword(keyword)}/>
-            <p>selected : {selectedKeyword}</p>
-            {/* タイマー選択 */}
-            <h2>Select Timer</h2>
-            <ButtonList
-                valueList = {timeList}
-                onClick = {(value)=>setSelectedTimer(value)}
-            />
-            <p>selectedTimer : {selectedTimer}</p>
-            {/* プレイボタン */}
-            <Button value = "Play!" onClick={()=>ToPlayer()}/>
+        <div className='h-screen'>
+            <div>
+                <h2 className ="text-xl ">KEYWORD</h2>
+                {keywordsList && keywordsList.map((childList,index) => {
+                    return <div>
+                        <p>{index+1}</p>
+                        <ButtonList
+                            key = {index} 
+                            valueList = {childList}
+                            onClick = {(value,id)=>selectKeyword(index,value,id)}
+                            selectedId = {selectedIdList[index]}    
+                        />
+                        <AddKeyword onClick={keyword =>addKeyword(index,keyword)}/>
+                    </div>
+                })}
+                {/* タイマー選択 */}
+                <h2>Select Timer</h2>
+                <ButtonList
+                    valueList = {timeList}
+                    onClick = {(value,id)=>selectTimer(value,id)}
+                    selectedId = {selectedIdList[3]} 
+                />
+
+                <div className="mt-10 mx-auto ">
+                    <Button value = "Play!" onClick={()=>ToPlayer()}/>
+                </div>
+                
+            </div>
         </div>
     
     );
     
 }
 const AddKeyword = (props) =>{
-    const [keyword,setKeyword] = React.useState("");
-    const [isInput,setIsInput] = React.useState(false);
+    const [keyword,setKeyword] = useState("");
+    const [isInput,setIsInput] = useState(false);
     function showInput(){
         setIsInput(true)
     }
     function handleChange(event){
-        // console.log(event)
         setKeyword(event.target.value)
     }
     function OnAddClick(){
@@ -115,7 +143,7 @@ const AddKeyword = (props) =>{
     }
     if(isInput){
         return  <div>
-                    <input type="text"  onChange = {(event) => handleChange(event)}/>
+                    <input className='border rounded border-blue-400 text-blue-500 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50' type="text"  onChange = {(event) => handleChange(event)}/>
                     <Button value = "add" onClick = {() => OnAddClick()}/>
                 </div>;
     }else{
@@ -131,23 +159,22 @@ const AddKeyword = (props) =>{
 
 const ButtonList = (props) =>{ 
     return (
-        props.valueList.map((object) => 
-            <Button 
+        props.valueList.map((object) => {
+            let selected = false;
+            if(object.id === props.selectedId){
+                selected = true;
+            }
+            return <Button 
                 key={object.id.toString()}
                 value = {object.value}
-                onClick = {() => props.onClick(object.value)}
+                selected = {selected}
+                onClick = {() => props.onClick(object.value,object.id)}
             />
+        }
         )
     );
 }
 
-const Button = (props) =>{
-    return (
-        <button onClick={props.onClick}>
-            {props.value}
-        </button>
 
-    );
-}
 
 export default Form;
